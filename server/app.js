@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 
-const astrologyRoutes = require("./router/astrology"); // ✅ correct path
+const astrologyRoutes = require("../router/astrology"); // ✅ correct path
 
 const app = express();
 
