@@ -4,7 +4,12 @@ const router = express.Router();
 const { generateChart } = require("../services/ephemeris");
 const { analyzeChart, analyzeChartForQuestion } = require("../services/ruleEngine");
 const TranslationHelper = require("../services/translations/translationHelper");
-
+router.options("*", (req, res) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.sendStatus(200);
+});
 /**
  * Comprehensive chart analysis
  * POST /api/astrology/analyze

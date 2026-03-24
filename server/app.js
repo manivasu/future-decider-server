@@ -5,15 +5,16 @@ const astrologyRoutes = require("../router/astrology");
 
 const app = express();
 
-// ✅ CORS Configuration (IMPORTANT)
-app.use(cors({
-  origin: "https://future-decider-client.vercel.app",
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  credentials: true
-}));
+// ✅ VERY IMPORTANT: allow ALL first (debug mode)
+app.use(cors());
 
-// ✅ Handle preflight requests
-app.options("*", cors());
+// ✅ Explicit preflight handling
+app.options("*", (req, res) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.sendStatus(200);
+});
 
 // Middleware
 app.use(express.json());
@@ -21,40 +22,20 @@ app.use(express.json());
 // API Routes
 app.use("/api/astrology", astrologyRoutes);
 
-// Welcome endpoint
+// Root
 app.get("/", (req, res) => {
-  res.json({
-    message: "FutureDecider - Real-time Astrology API",
-    version: "1.0.0",
-    features: [
-      "Comprehensive birth chart analysis",
-      "Real-time problem detection and solutions",
-      "Beneficial yoga identification",
-      "Dasha (timing) calculations",
-      "Question-specific astrology readings"
-    ],
-    endpoints: {
-      health: "GET /api/astrology/health",
-      analyze: "POST /api/astrology/analyze",
-      ask: "POST /api/astrology/ask"
-    }
-  });
+  res.json({ message: "API working ✅" });
 });
 
-// Error handling middleware
+// Error handler
 app.use((err, req, res, next) => {
-  console.error("Error:", err.message);
-  res.status(500).json({
-    success: false,
-    error: "Internal server error",
-    message: err.message
-  });
+  console.error("🔥 ERROR:", err);
+  res.status(500).json({ error: err.message });
 });
 
-// ✅ FIXED: Use Railway dynamic port
+// ✅ CRITICAL FIX
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-  console.log(`🌟 FutureDecider Server running on port ${PORT}`);
-  console.log("📊 Astrology API endpoints ready: /api/astrology/analyze or /api/astrology/ask");
+  console.log(`Server running on port ${PORT}`);
 });
