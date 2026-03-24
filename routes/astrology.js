@@ -7,19 +7,29 @@ const { translateAnalysisToTelugu } = require("../services/translations/translat
 
 router.post("/analyze", async (req, res) => {
   try {
-    const { date, time, place, language } = req.body;
+    console.log("🔥 Request received:", req.body);
+
+    const { date, time, place, userAge, language } = req.body;
 
     const chart = await generateChart(date, time, place);
-    let analysis = analyzeChart(chart);
+    console.log("✅ Chart generated");
 
-    // Translate to Telugu if requested
-    if (language === "telugu") {
-      analysis = translateAnalysisToTelugu(analysis);
-    }
+    let analysis = analyzeChart(chart, userAge);
+    console.log("✅ Analysis done");
 
-    res.json({ chart, analysis });
+    res.json({
+      success: true,
+      chart,
+      analysis
+    });
+
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("🔥 ERROR IN ANALYZE:", err); // 👈 VERY IMPORTANT
+
+    res.status(500).json({
+      success: false,
+      error: err.message
+    });
   }
 });
 
