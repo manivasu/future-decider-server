@@ -5,8 +5,17 @@ const astrologyRoutes = require("../router/astrology"); // ✅ correct path
 
 const app = express();
 
-// ✅ CORS (enough, no manual OPTIONS needed)
-app.use(cors());
+// ✅ CORS Explicit Configuration for Vercel and Localhost
+app.use(cors({
+  origin: [
+    "https://future-decider-client.vercel.app",
+    "http://localhost:5173",
+    "http://localhost:5000",
+    "http://localhost:3000"
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
 
 // Middleware
 app.use(express.json());
