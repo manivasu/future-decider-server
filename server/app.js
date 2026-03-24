@@ -5,8 +5,17 @@ const astrologyRoutes = require("../router/astrology");
 
 const app = express();
 
+// ✅ CORS Configuration (IMPORTANT)
+app.use(cors({
+  origin: "https://future-decider-client.vercel.app",
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  credentials: true
+}));
+
+// ✅ Handle preflight requests
+app.options("*", cors());
+
 // Middleware
-app.use(cors());
 app.use(express.json());
 
 // API Routes
@@ -42,7 +51,10 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(5000, () => {
-  console.log("🌟 FutureDecider Server running on port 5000");
+// ✅ FIXED: Use Railway dynamic port
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log(`🌟 FutureDecider Server running on port ${PORT}`);
   console.log("📊 Astrology API endpoints ready: /api/astrology/analyze or /api/astrology/ask");
 });
