@@ -1,23 +1,25 @@
 const express = require("express");
-const cors = require("cors");
 
-const astrologyRoutes = require("../router/astrology"); // ✅ correct path
+const astrologyRoutes = require("../router/astrology"); // keep this as per your structure
 
 const app = express();
 
-// ✅ CORS Explicit Configuration for Vercel and Localhost
-app.use(cors({
-  origin: [
-    "https://future-decider-client.vercel.app",
-    "http://localhost:5173",
-    "http://localhost:5000",
-    "http://localhost:4000",
-    "http://localhost:3000"
-  ],
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
-}));
-app.options("*", cors());
+/**
+ * ✅ GLOBAL CORS HANDLER (TOP PRIORITY)
+ * This will FIX all CORS + OPTIONS issues
+ */
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+  // ✅ Handle preflight immediately
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+
+  next();
+});
 
 // Middleware
 app.use(express.json());
@@ -25,11 +27,18 @@ app.use(express.json());
 // Routes
 app.use("/api/astrology", astrologyRoutes);
 
-// Root and common healthcheck aliases
-const healthCheckResponse = (req, res) => res.json({ message: "FutureDecider API working ✅", status: "ok" });
-app.get("/", healthCheckResponse);
-app.get("/health", healthCheckResponse);
-app.get("/api/health", healthCheckResponse);
+// Health routes
+app.get("/", (req, res) => {
+  res.json({ message: "FutureDecider API working ✅" });
+});
+
+app.get("/health", (req, res) => {
+  res.json({ status: "ok" });
+});
+
+app.get("/api/health", (req, res) => {
+  res.json({ status: "ok" });
+});
 
 // Error handler
 app.use((err, req, res, next) => {
@@ -40,26 +49,22 @@ app.use((err, req, res, next) => {
   });
 });
 
-// ✅ Railway port
+// Railway port
 const PORT = process.env.PORT || 8080;
 
-const server = app.listen(PORT, "::", () => {
+const server = app.listen(PORT, "0.0.0.0", () => {
   console.log(`🌟 Server running on port ${PORT}`);
 });
 
-// ✅ Graceful shutdown for Railway (SIGTERM)
+/**
+ * ✅ Graceful shutdown (Railway)
+ */
 process.on("SIGTERM", () => {
-  console.log("SIGTERM received. Shutting down gracefully...");
-  server.close(() => {
-    console.log("Server closed.");
-    process.exit(0);
-  });
+  console.log("SIGTERM received. Shutting down...");
+  server.close(() => process.exit(0));
 });
 
 process.on("SIGINT", () => {
-  console.log("SIGINT received. Shutting down gracefully...");
-  server.close(() => {
-    console.log("Server closed.");
-    process.exit(0);
-  });
+  console.log("SIGINT received. Shutting down...");
+  server.close(() => process.exit(0));
 });

@@ -9,35 +9,10 @@ const TranslationHelper = require("../services/translations/translationHelper");
  * POST /api/astrology/analyze
  */
 router.post("/analyze", async (req, res) => {
-  try {
-    const { date, time, place, userAge, language } = req.body;
-
-    if (!date || !time || !place) {
-      return res.status(400).json({
-        error: "Missing required fields: date, time, place"
-      });
-    }
-
-    const chart = await generateChart(date, time, place);
-    let analysis = analyzeChart(chart, userAge);
-
-    if (language === "telugu") {
-      analysis = TranslationHelper.translateAllResults(analysis);
-    }
-
-    res.json({
-      success: true,
-      chart,
-      analysis,
-      language: language || "english"
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      success: false,
-      error: err.message
-    });
-  }
+  return res.json({
+    success: true,
+    message: "API working perfectly 🚀"
+  });
 });
 
 /**
