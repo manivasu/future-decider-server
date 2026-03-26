@@ -23,10 +23,11 @@ app.use(express.json());
 // Routes
 app.use("/api/astrology", astrologyRoutes);
 
-// Root
-app.get("/", (req, res) => {
-  res.json({ message: "FutureDecider API working ✅" });
-});
+// Root and common healthcheck aliases
+const healthCheckResponse = (req, res) => res.json({ message: "FutureDecider API working ✅", status: "ok" });
+app.get("/", healthCheckResponse);
+app.get("/health", healthCheckResponse);
+app.get("/api/health", healthCheckResponse);
 
 // Error handler
 app.use((err, req, res, next) => {
