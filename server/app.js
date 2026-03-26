@@ -11,6 +11,7 @@ app.use(cors({
     "https://future-decider-client.vercel.app",
     "http://localhost:5173",
     "http://localhost:5000",
+    "http://localhost:4000",
     "http://localhost:3000"
   ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
