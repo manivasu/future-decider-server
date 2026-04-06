@@ -297,10 +297,40 @@ class TranslationHelper {
         currentDasha: analysis.dashaInterpretation.currentDasha ? this.getPlanetTelugu(analysis.dashaInterpretation.currentDasha) : analysis.dashaInterpretation.currentDasha,
         theme: translateMessage(analysis.dashaInterpretation.theme),
         expectations: translateMessage(analysis.dashaInterpretation.expectations)
-      } : analysis.dashaInterpretation
+      } : analysis.dashaInterpretation,
+      
+      panchangam: analysis.panchangam ? this.translatePanchangam(analysis.panchangam) : analysis.panchangam,
+      aadayam: analysis.aadayam !== undefined ? analysis.aadayam : null,
+      vyayam: analysis.vyayam !== undefined ? analysis.vyayam : null,
+      rajapujyam: analysis.rajapujyam !== undefined ? analysis.rajapujyam : null,
+      avamanam: analysis.avamanam !== undefined ? analysis.avamanam : null
     };
     
     return translated;
+  }
+
+  // Translate Panchangam results to Telugu
+  // Panchangam values are numerical (0-14 and 0-7), so no translation needed
+  // Just ensure proper formatting
+  static translatePanchangam(panchangam) {
+    if (!panchangam) return panchangam;
+    
+    // If Panchangam data is not populated yet, return null to hide the section
+    if (panchangam.dataAvailable === false) {
+      return null;
+    }
+    
+    return {
+      ...panchangam,
+      aadayam: panchangam.aadayam !== null ? panchangam.aadayam : undefined,
+      vyayam: panchangam.vyayam !== null ? panchangam.vyayam : undefined,
+      rajapujyam: panchangam.rajapujyam !== null ? panchangam.rajapujyam : undefined,
+      avamanam: panchangam.avamanam !== null ? panchangam.avamanam : undefined,
+      moonRashi: panchangam.moonRashi,
+      housePosition: panchangam.housePosition,
+      houseLord: this.getPlanetTelugu(panchangam.houseLord || "Sun"),
+      year: panchangam.year
+    };
   }
 }
 

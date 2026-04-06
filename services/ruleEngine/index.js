@@ -6,6 +6,7 @@ const { analyzeHouses } = require("./houseRules");
 const { analyzeYogas } = require("./yogaRules");
 const { analyzeProblems } = require("./problemRules");
 const { calculateDashas, analyzeBhukti, getAuspiciousPeriods } = require("./dashaRules");
+const { calculatePanchangam } = require("./panchangamRules");
 
 /**
  * Main function - Comprehensive chart analysis
@@ -79,7 +80,23 @@ exports.analyzeChart = (chart, userAge = null) => {
     }
   }
 
-  // 6. SUMMARY & SCORING
+  // 6. PANCHANGAM ANALYSIS (Auspicious Panchangam elements)
+  try {
+    const panchangam = calculatePanchangam(chart);
+    // Only add if data is actually populated (not just the template structure)
+    if (panchangam && panchangam.dataAvailable !== false) {
+      analysis.panchangam = panchangam;
+      // Also add individual fields for direct access
+      analysis.aadayam = panchangam.aadayam;
+      analysis.vyayam = panchangam.vyayam;
+      analysis.rajapujyam = panchangam.rajapujyam;
+      analysis.avamanam = panchangam.avamanam;
+    }
+  } catch (e) {
+    console.error("Panchangam analysis error:", e.message);
+  }
+
+  // 7. SUMMARY & SCORING
   analysis.summary = generateSummary(analysis);
   analysis.scorecard = generateScorecard(analysis);
   analysis.recommendations = generateRecommendations(analysis);
